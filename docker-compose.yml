@@ -1,0 +1,55 @@
+services:
+  nginx1:
+    image: nginx:1.27-alpine
+    networks:
+      proxy:
+        ipv4_address: 172.30.0.11
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/nginx1.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/xff.conf:/etc/nginx/xff.conf:ro
+    depends_on:
+      - app
+
+  nginx2:
+    image: nginx:1.27-alpine
+    networks:
+      proxy:
+        ipv4_address: 172.30.0.12
+    ports:
+      - "8082:80"
+    volumes:
+      - ./nginx/nginx2.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/xff.conf:/etc/nginx/xff.conf:ro
+    depends_on:
+      - app
+
+  nginx3:
+    image: nginx:1.27-alpine
+    networks:
+      proxy:
+        ipv4_address: 172.30.0.13
+    ports:
+      - "8083:80"
+    volumes:
+      - ./nginx/nginx3.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/xff.conf:/etc/nginx/xff.conf:ro
+    depends_on:
+      - app
+
+  app:
+    build: ./app
+    networks:
+      proxy:
+        ipv4_address: 172.30.0.20
+    expose:
+      - "8080"
+
+networks:
+  proxy:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/24
